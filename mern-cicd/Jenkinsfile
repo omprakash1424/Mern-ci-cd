@@ -1,4 +1,4 @@
-pipeline {
+-pipeline {
     agent any
 
     triggers {
@@ -22,7 +22,7 @@ pipeline {
 
         stage('npm - Frontend') {
             steps {
-                dir('frontend') {
+                dir('mern-cicd/frontend') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
@@ -31,7 +31,7 @@ pipeline {
 
         stage('npm - Backend') {
             steps {
-                dir('backend') {
+                dir('mern-cicd/backend') {
                     sh 'npm install'
                     sh 'npm test --if-present'
                 }
