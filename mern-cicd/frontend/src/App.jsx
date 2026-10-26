@@ -22,7 +22,7 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: 480, margin: '40px auto', fontFamily: 'sans-serif' }}>
-      <h1>MERN Notes</h1>
+      <h1>OM Notes</h1>
       <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Write a note" />
       <button onClick={add}>Add</button>
       <ul>{notes.map((n) => <li key={n._id}>{n.text}</li>)}</ul>
