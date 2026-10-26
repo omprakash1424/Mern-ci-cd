@@ -1,0 +1,87 @@
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()   // fired by the GitHub webhook
+    }
+
+    environment {
+        AWS_REGION = 'ap-south-1'
+        ACCOUNT_ID = '123456789012'          // <-- your AWS account ID
+        REGISTRY   = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        TAG        = "${BUILD_NUMBER}"
+        DEPLOY_HOST = 'ec2-user@<EC2_PUBLIC_IP>'   // <-- Docker host
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('npm - Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('npm - Backend') {
+            steps {
+                dir('backend') {
+                    sh 'npm install'
+                    sh 'npm test --if-present'
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                sh "docker build -t ${REGISTRY}/mern-frontend:${TAG} ./frontend"
+                sh "docker build -t ${REGISTRY}/mern-backend:${TAG} ./backend"
+            }
+        }
+
+        stage('Push to ECR') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
+                                  credentialsId: 'aws-creds']]) {
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                        docker login --username AWS --password-stdin ${REGISTRY}
+                        docker push ${REGISTRY}/mern-frontend:${TAG}
+                        docker push ${REGISTRY}/mern-backend:${TAG}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
+                                  credentialsId: 'aws-creds']]) {
+                    sshagent(['ec2-ssh-key']) {
+                        sh """
+                            scp -o StrictHostKeyChecking=no docker-compose.yml ${DEPLOY_HOST}:~/docker-compose.yml
+                            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} '
+                                aws ecr get-login-password --region ${AWS_REGION} | \
+                                docker login --username AWS --password-stdin ${REGISTRY} &&
+                                export REGISTRY=${REGISTRY} TAG=${TAG} &&
+                                docker compose pull &&
+                                docker compose up -d
+                            '
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success { echo 'Deployed successfully' }
+        failure { echo 'Pipeline failed - check the logs' }
+    }
+}

@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    image: ${REGISTRY:-local}/mern-backend:${TAG:-latest}
+    restart: always
+    environment:
+      MONGO_URL: mongodb://mongo:27017/mern
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    image: ${REGISTRY:-local}/mern-frontend:${TAG:-latest}
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
