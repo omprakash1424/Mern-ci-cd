@@ -6,8 +6,8 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = 'ap-south-1'
-        ACCOUNT_ID = '123456789012'          // <-- your AWS account ID
+        AWS_REGION = 'us-east-1'
+        ACCOUNT_ID = '461319271536'          // <-- your AWS account ID
         REGISTRY   = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         TAG        = "${BUILD_NUMBER}"
         DEPLOY_HOST = 'ec2-user@<EC2_PUBLIC_IP>'   // <-- Docker host
