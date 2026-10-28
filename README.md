@@ -94,11 +94,8 @@ flowchart LR
         |-- styles.css
 
 -> Run locally
-
 Requires Docker Desktop.
-
 docker compose up --build
-
 Open `http://localhost`. Stop with `Ctrl+C` and remove the containers with `docker compose down`.
 
 -> Infrastructure setup (one time)
