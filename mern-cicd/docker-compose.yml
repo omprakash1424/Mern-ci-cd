@@ -18,7 +18,10 @@ services:
     build: ./frontend
     image: ${REGISTRY:-local}/mern-frontend:${TAG:-latest}
     restart: always
-caddy:
+    depends_on:
+      - backend
+
+  caddy:
     image: caddy:2
     restart: always
     ports:
@@ -30,8 +33,6 @@ caddy:
       - caddy-config:/config
     depends_on:
       - frontend
-    depends_on:
-      - backend
 
 volumes:
   mongo-data:
