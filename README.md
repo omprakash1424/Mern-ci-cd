@@ -1,5 +1,5 @@
 Website status: Running
-link: http://52.1.115.16/
+link:https://attirenotes.duckdns.org/
 
 -> MERN Notes & Tasks: CI/CD with Jenkins, Docker, ECR and EC2
 
