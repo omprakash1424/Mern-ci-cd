@@ -1,3 +1,6 @@
+Website status: Running
+link: http://52.1.115.16/
+
 -> MERN Notes & Tasks: CI/CD with Jenkins, Docker, ECR and EC2
 
 A MERN (MongoDB, Express, React, Node.js) notes app that is deployed automatically.
