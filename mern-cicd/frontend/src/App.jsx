@@ -275,7 +275,7 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <h1>Attire notes</h1>
+        <h1>Notes and Tasks</h1>
         <p>{notes.length} notes &middot; {doneTasks}/{allTasks.length} tasks done</p>
       </header>
 
